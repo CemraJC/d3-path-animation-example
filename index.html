@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Example Animated Path Of Coolness</title>
+    <style>
+        body, html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        #container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        svg path {
+            stroke: #00436D;
+            stroke-width: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script src="./d3.v4.min.js"></script>
+    <script>
+        // Add the container with the Github repo link
+        var container = d3.select('#container')
+            .append('a')
+            .attr('href', 'https://github.com/cemrajc/d3-animated-path-example')
+            .attr('title', "Visit the Github Repository!");
+
+        // Make the SVG and Group. The Group is transformed (translated) to stop clipping
+        var svg = container.append('svg')
+                           .attr('width', 190)
+                           .attr('height', 190)
+
+        var group = svg.append('g')
+                       .attr('transform', 'translate(20,20)')
+
+        // Add the path element. All the weirdo numbers and stuff is just the code for the Github SVG.
+        // You can generate these weirdo numbers a number of ways - most popular is:
+        //           var line = d3.line().curve(d3.curveCatmullRom)
+        //           var data = [/* and array of 2-element arrays*/ [0,0], [100,150], [150,100]]
+        //           console.log(line(data))  // <--- Gives you some weirdo numbers that fit the data
+        var path = group.append('path')
+                        .attr('d', "M74 0C33.1 0 0 34 0 75.9 0 109.4 21.2 137.8 50.6 147.9 54.3 148.6 55.7 146.2 55.7 144.2 55.7 142.4 55.6 137.6 55.6 131.3 35 135.9 30.6 121.1 30.6 121.1 27.3 112.4 22.4 110 22.4 110 15.7 105.3 22.9 105.4 22.9 105.4 30.4 106 34.3 113.2 34.3 113.2 40.9 124.8 51.6 121.5 55.8 119.5 56.5 114.6 58.4 111.3 60.5 109.4 44.1 107.5 26.8 101 26.8 71.9 26.8 63.6 29.7 56.9 34.4 51.5 33.6 49.6 31.1 41.9 35.1 31.5 35.1 31.5 41.3 29.4 55.5 39.2 61.4 37.6 67.7 36.7 74 36.7 80.3 36.7 86.6 37.6 92.5 39.2 106.7 29.4 112.9 31.5 112.9 31.5 116.9 41.9 114.4 49.6 113.6 51.5 118.3 56.9 121.2 63.6 121.2 71.9 121.2 101.1 103.9 107.5 87.4 109.3 90.1 111.7 92.4 116.3 92.4 123.4 92.4 133.5 92.3 141.7 92.3 144.2 92.3 146.2 93.7 148.6 97.4 147.9 126.8 137.8 148 109.4 148 75.9 148 34 114.9 0 74 0")
+
+        // We need to know the path length for the following trick.
+        // Luckily, browsers have an inbuilt method for finding path length. To get
+        // at this inbuilt method, we need the DOM node first.
+        var pathlen = path.node().getTotalLength()
+
+        // Now for the trick! `stroke-dasharray: <dash-width>, <gap-width>` is the format for this property
+        // You can probably guess what the following code does
+        path.attr('stroke-dasharray', pathlen + ', ' + pathlen).attr('fill', '#fff')
+
+        // The Magic is here. Setting the initial offset to be the curve's length makes it shifted alllll the wasy
+        // over the start - then we shift it back to 0 to fill in the curve.
+        path.attr('stroke-dashoffset', pathlen)
+            .transition()
+            .duration(5000)
+            .attr('stroke-dashoffset', 0)
+            .transition()
+            .duration(2000)
+            .attr('fill', '#9AC0FF')
+
+    </script>
+</body>
+</html>
