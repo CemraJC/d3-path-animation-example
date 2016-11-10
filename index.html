@@ -7,7 +7,9 @@
     <style>
         body, html {
             height: 100%;
+            min-height: 425px;
             width: 100%;
+            min-width: 475px;
             margin: 0;
             box-sizing: border-box;
         }
@@ -20,9 +22,32 @@
             width: 100%;
         }
 
-        svg path {
-            stroke: #00436D;
+        svg.github-logo path {
+            stroke: #1575B1;
             stroke-width: 4px;
+            transition: stroke 500ms;
+        }
+
+        svg.github-logo path:hover {
+            stroke: #0A006C;
+        }
+
+        svg.call-to-action {
+            position: relative;
+            left: -20px;
+            top: -130px;
+            pointer-events: none;
+        }
+
+        svg.call-to-action text {
+            font-size: 10pt;
+            font-family: monospace;
+        }
+
+        svg.call-to-action path {
+            stroke: #333;
+            stroke-width: 3px;
+            position: absolute;
         }
     </style>
 </head>
@@ -30,46 +55,112 @@
     <div id="container"></div>
     <script src="./d3.v4.min.js"></script>
     <script>
-        // Add the container with the Github repo link
-        var container = d3.select('#container')
-            .append('a')
-            .attr('href', 'https://github.com/cemrajc/d3-animated-path-example')
-            .attr('title', "Visit the Github Repository!");
 
-        // Make the SVG and Group. The Group is transformed (translated) to stop clipping
-        var svg = container.append('svg')
-                           .attr('width', 190)
-                           .attr('height', 190)
+        /*
+         *
+         *  Define the Main Github Logo
+         *  This section is where the main demo happens
+         *
+         */
 
-        var group = svg.append('g')
-                       .attr('transform', 'translate(20,20)')
+        // I use a function because the variable names are common and likely to clash if multiple
+        // SVGs are being drawn. Function scoping solves this.
+        function drawGithubLogo() {
+            // Add the SVG container with the Github repo link (make it clickable)
+            var container = d3.select('#container')
+                .append('a')
+                .attr('href', 'https://github.com/cemrajc/d3-animated-path-example')
+                .attr('title', "Visit the Github Repository!")
+                .style('position', 'absolute')
 
-        // Add the path element. All the weirdo numbers and stuff is just the code for the Github SVG.
-        // You can generate these weirdo numbers a number of ways - most popular is:
-        //           var line = d3.line().curve(d3.curveCatmullRom)
-        //           var data = [/* and array of 2-element arrays*/ [0,0], [100,150], [150,100]]
-        //           console.log(line(data))  // <--- Gives you some weirdo numbers that fit the data
-        var path = group.append('path')
-                        .attr('d', "M74 0C33.1 0 0 34 0 75.9 0 109.4 21.2 137.8 50.6 147.9 54.3 148.6 55.7 146.2 55.7 144.2 55.7 142.4 55.6 137.6 55.6 131.3 35 135.9 30.6 121.1 30.6 121.1 27.3 112.4 22.4 110 22.4 110 15.7 105.3 22.9 105.4 22.9 105.4 30.4 106 34.3 113.2 34.3 113.2 40.9 124.8 51.6 121.5 55.8 119.5 56.5 114.6 58.4 111.3 60.5 109.4 44.1 107.5 26.8 101 26.8 71.9 26.8 63.6 29.7 56.9 34.4 51.5 33.6 49.6 31.1 41.9 35.1 31.5 35.1 31.5 41.3 29.4 55.5 39.2 61.4 37.6 67.7 36.7 74 36.7 80.3 36.7 86.6 37.6 92.5 39.2 106.7 29.4 112.9 31.5 112.9 31.5 116.9 41.9 114.4 49.6 113.6 51.5 118.3 56.9 121.2 63.6 121.2 71.9 121.2 101.1 103.9 107.5 87.4 109.3 90.1 111.7 92.4 116.3 92.4 123.4 92.4 133.5 92.3 141.7 92.3 144.2 92.3 146.2 93.7 148.6 97.4 147.9 126.8 137.8 148 109.4 148 75.9 148 34 114.9 0 74 0")
+            // Make the SVG and Group. The Group is transformed (translated) to stop clipping
+            var svg = container.append('svg')
+                               .classed('github-logo', true)
+                               .attr('width', 190)
+                               .attr('height', 190)
 
-        // We need to know the path length for the following trick.
-        // Luckily, browsers have an inbuilt method for finding path length. To get
-        // at this inbuilt method, we need the DOM node first.
-        var pathlen = path.node().getTotalLength()
+            var group = svg.append('g')
+                           .attr('transform', 'translate(20,20)')
 
-        // Now for the trick! `stroke-dasharray: <dash-width>, <gap-width>` is the format for this property
-        // You can probably guess what the following code does
-        path.attr('stroke-dasharray', pathlen + ', ' + pathlen).attr('fill', '#fff')
+            // Add the path element. All the weirdo numbers and stuff is just the code for the Github SVG.
+            // You can generate these weirdo numbers a number of ways - most popular is:
+            //           var line = d3.line().curve(d3.curveCatmullRom)
+            //           var data = [/* and array of 2-element arrays*/ [0,0], [100,150], [150,100]]
+            //           console.log(line(data))  // <--- Gives you some weirdo numbers that fit the data
+            var path = group.append('path')
+                            .attr('d', "M74 0C33.1 0 0 34 0 75.9 0 109.4 21.2 137.8 50.6 147.9 54.3 148.6 55.7 146.2 55.7 144.2 55.7 142.4 55.6 137.6 55.6 131.3 35 135.9 30.6 121.1 30.6 121.1 27.3 112.4 22.4 110 22.4 110 15.7 105.3 22.9 105.4 22.9 105.4 30.4 106 34.3 113.2 34.3 113.2 40.9 124.8 51.6 121.5 55.8 119.5 56.5 114.6 58.4 111.3 60.5 109.4 44.1 107.5 26.8 101 26.8 71.9 26.8 63.6 29.7 56.9 34.4 51.5 33.6 49.6 31.1 41.9 35.1 31.5 35.1 31.5 41.3 29.4 55.5 39.2 61.4 37.6 67.7 36.7 74 36.7 80.3 36.7 86.6 37.6 92.5 39.2 106.7 29.4 112.9 31.5 112.9 31.5 116.9 41.9 114.4 49.6 113.6 51.5 118.3 56.9 121.2 63.6 121.2 71.9 121.2 101.1 103.9 107.5 87.4 109.3 90.1 111.7 92.4 116.3 92.4 123.4 92.4 133.5 92.3 141.7 92.3 144.2 92.3 146.2 93.7 148.6 97.4 147.9 126.8 137.8 148 109.4 148 75.9 148 34 114.9 0 74 0")
 
-        // The Magic is here. Setting the initial offset to be the curve's length makes it shifted alllll the wasy
-        // over the start - then we shift it back to 0 to fill in the curve.
-        path.attr('stroke-dashoffset', pathlen)
-            .transition()
-            .duration(5000)
-            .attr('stroke-dashoffset', 0)
-            .transition()
-            .duration(2000)
-            .attr('fill', '#9AC0FF')
+            // We need to know the path length for the following trick.
+            // Luckily, browsers have an inbuilt method for finding path length. To get
+            // at this inbuilt method, we need the DOM node first.
+            var pathlen = path.node().getTotalLength()
+
+            // Now for the trick! `stroke-dasharray: <dash-width>, <gap-width>` is the format for this property
+            // You can probably guess what the following code does
+            path.attr('stroke-dasharray', pathlen + ', ' + pathlen).attr('fill', '#fff')
+
+            // The Magic is here. Setting the initial offset to be the curve's length makes it shifted alllll the wasy
+            // over the start - then we shift it back to 0 to fill in the curve.
+            path.attr('stroke-dashoffset', pathlen)
+                .transition()
+                .duration(5000)
+                .attr('stroke-dashoffset', 0)
+                .transition()
+                .duration(2000)
+                .attr('fill', '#9AC0FF')
+        }
+
+
+        /*
+         *
+         *  Define the call to action text ("Click to view the Github Repo")
+         *  Also, this section is where the cool arrow animation happens
+         *
+         */
+
+        function drawCallToActionText() {
+            // Set up the container
+            var container = d3.select('#container').append('svg')
+                              .classed('call-to-action', true)
+                              .attr('width', 350)
+                              .attr('height', 160)
+
+            // Containing group to avoid clipping
+            var group = container.append('g').attr('transform', 'translate(10, 120)')
+
+            // Position and fade in the text (after 6 seconds)
+            var text = group.append('text')
+                            .text("Click to view the Github repo!")
+                            .attr('transform', 'rotate(-20, 0, 0),translate(2,-32)')
+                            .attr('opacity', 0) // Fade in!
+                            .transition().delay(6000).duration(1000)
+                            .attr('opacity', 1)
+
+            // Position the path (the arrow)
+            var path = group.append('path')
+                            .attr('fill', '#fff')
+                            .attr('transform', 'translate(140, -140)')
+                            .attr('d', "m 66.862292,35.657161 c -3.290494,-1.039835 -4.433693,-9.255432 -1.60932,-9.661105 7.559165,-1.085735 57.777528,22.819073 70.018638,48.018521 14.69516,30.251343 -11.92421,68.205343 -11.92421,68.205343 l 14.41331,0.0888 -28.25275,19.79477 0.0748,-31.41502 7.65913,9.30757 c 0,0 24.68973,-37.19014 12.06768,-64.627821 C 119.02997,56.549102 87.505295,37.929279 66.86232,35.657148 Z")
+
+            // Again, get the length of the path
+            var pathlen = path.node().getTotalLength()
+
+            // By manipulating dashes and gaps, we make the arrow do a cool draw-in
+            // on both sides. See if you can figure out how it works!
+            path.attr('stroke-dasharray', 0 + ', ' + pathlen)
+                .attr('stroke-dashoffset', -17) // The -17 makes up for difference in the length of either side of the arrow
+                .transition().delay(6000).duration(2000)
+                .attr('stroke-dasharray', pathlen/2 + ', ' + 0)
+                .transition().duration(1000)
+                .attr('fill', '#B9B9B9')
+        }
+
+        /*
+         * Yay! Actually drawing everything
+         */
+
+        drawGithubLogo()
+        drawCallToActionText()
 
     </script>
 </body>
